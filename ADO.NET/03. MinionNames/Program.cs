@@ -1,4 +1,4 @@
-﻿using Microsoft.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 
@@ -29,7 +29,7 @@ namespace _03._MinionNames
 
             using var commandCountMinions = new SqlCommand(countVillainsQuery, connection);
             commandCountMinions.Parameters.AddWithValue("@Id", id);
-            var countMinions = commandCountMinions.ExecuteScalar();
+            var countMinions = (int)commandCountMinions.ExecuteScalar();
 
             string namesMinionsQuery = @"SELECT ROW_NUMBER() OVER (ORDER BY m.Name) as RowNum,
                                                              m.Name, 
@@ -49,7 +49,7 @@ namespace _03._MinionNames
                     Console.WriteLine($"No villain with ID {id} exists in the database.");
                 }
 
-                else if (countMinions == null)
+                else if (countMinions == 0)
                 {
                     Console.WriteLine($" Villain: {name}");
                     Console.WriteLine("(no minions)");
