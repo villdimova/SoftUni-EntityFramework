@@ -50,7 +50,7 @@ namespace P01_StudentSystem.Data
               .IsUnicode(false);
 
             modelBuilder.Entity<StudentCourse>()
-                .HasKey(k => new { k.StudentId, k.CorseId });
+                .HasKey(k => new { k.StudentId, k.CourseId });
         }
     }
 }
