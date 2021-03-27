@@ -23,56 +23,119 @@
             var sb = new StringBuilder();
             var gamesDtos = JsonConvert.DeserializeObject<ImportGameDto[]>(jsonString);
             var games = new List<Game>();
+            var developers = new List<Developer>();
+            var genres = new List<Genre>();
+            var tags = new List<Tag>();
+
             foreach (var gameDto in gamesDtos)
             {
-                if (!IsValid(gameDto) || gameDto.Tags.Count == 0)
+                if (!IsValid(gameDto))
                 {
                     sb.AppendLine(ErrorMessage);
                     continue;
+
                 }
 
                 DateTime releaseDate;
-                var validDate= DateTime.TryParseExact(gameDto.ReleaseDate, "yyyy-MM-dd",
+                bool isDateValid = DateTime.TryParseExact(gameDto.ReleaseDate, "yyyy-MM-dd",
                                                 CultureInfo.InvariantCulture, DateTimeStyles.None, out releaseDate);
 
-                if (!validDate)
+                if (!isDateValid)
                 {
                     sb.AppendLine(ErrorMessage);
                     continue;
+
                 }
 
-                var game = new Game
+                var validGame = new Game
                 {
-                    Name=gameDto.Name,
-                    Price=gameDto.Price,
-                    ReleaseDate=releaseDate
+                    Name = gameDto.Name,
+                    Price = gameDto.Price,
+                    ReleaseDate = releaseDate,
+             
                 };
 
-                var developer = GetDeveloper(context, gameDto.Developer);
+                var developer = developers.FirstOrDefault(d => d.Name == gameDto.Developer);
 
-                var genre = GetGenre(context, gameDto.Genre);
-
-                game.Developer = developer;
-                game.Genre = genre;
-                foreach (var currentTag in gameDto.Tags)
+                if (developer==null)
                 {
-                    var tag = GetTag(context, currentTag);
-                    game.GameTags.Add(new GameTag
+                   Developer newDeveloper = new Developer
                     {
-                        Game = game,
-                        Tag=tag
-                    });
+                        Name = gameDto.Developer
+                    };
 
-                   
+                    developers.Add(newDeveloper);
+                    validGame.Developer = newDeveloper;
                 }
-                games.Add(game);
 
-                sb.AppendLine($"Added {game.Name} ({game.Genre.Name}) with {game.GameTags.Count} tags");
+                else
+                {
+                    validGame.Developer = developer;
+                }
+
+                var genre = genres.FirstOrDefault(g => g.Name == gameDto.Genre);
+
+                if (genre==null)
+                {
+                    Genre newGenre = new Genre
+                    {
+                        Name = gameDto.Genre
+                    };
+
+                    genres.Add(newGenre);
+                    validGame.Genre = newGenre;
+                }
+
+                else
+                {
+                    validGame.Genre = genre;
+                }
+               
+               
+
+               
+                foreach (var tagDto in gameDto.Tags)
+                {
+
+                    var tag = tags.FirstOrDefault(t => t.Name == tagDto);
+                    if (tag==null)
+                    {
+                        var newTag = new Tag
+                        {
+                            Name = tagDto
+                        };
+                        tags.Add(newTag);
+                        tag = newTag;
+                    }
+                    
+
+                    var gameTag = new GameTag
+                    {
+                        Game = validGame,
+                        Tag = tag
+                    };
+
+                  
+                    validGame.GameTags.Add(gameTag);
+
+                }
+
+                if (validGame.GameTags.Count==0)
+                {
+                    sb.AppendLine(ErrorMessage);
+                    continue;
+
+                }
+
+                games.Add(validGame);
+                sb.AppendLine($"Added {validGame.Name} ({validGame.Genre.Name}) with {validGame.GameTags.Count} tags");
+
             }
 
             context.Games.AddRange(games);
             context.SaveChanges();
             return sb.ToString().TrimEnd();
+
         }
 
         private static Tag GetTag(VaporStoreDbContext context, string currentTag)
