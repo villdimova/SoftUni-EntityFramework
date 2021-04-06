@@ -2,9 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Quiz.Data;
 using Quiz.Services;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Quiz.ConsoleUI
@@ -17,19 +19,29 @@ namespace Quiz.ConsoleUI
             ConfigureServices(serviceCollection);
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
-            //var questionService = serviceProvider.GetService<IQuestionService>();
-            //questionService.Add("1+1", 1);
+            var json = File.ReadAllText("EF-Core-Quiz.json");
+         var questions=   JsonConvert.DeserializeObject<IEnumerable<JsonQuestion>>(json);
 
-            //var answerService = serviceProvider.GetService<IAnswerService>();
-            //answerService.Add("2", 5, true, 2);
+            var quizService = serviceProvider.GetService<IQuizService>();
+            var questionService = serviceProvider.GetService<IQuestionService>();
+            var answerService = serviceProvider.GetService<IAnswerService>();
 
-           // var userAnswerService = serviceProvider.GetService<IUserAnswerService>();
-            //userAnswerService.AddUserAnswer("cbd0d2c4-628c-4be4-a019-b4fab2493d95", 1, 1, 1);
+            var quizId = quizService.Add("EF Core Test");
 
-            var quizService = serviceProvider.GetService<IUserAnswerService>();
-            var quiz = quizService.GetUserResult("cbd0d2c4-628c-4be4-a019-b4fab2493d95", 1);
+            foreach (var question in questions)
+            {
+                var questionId = questionService.Add(question.Question,quizId);
 
-            Console.WriteLine(quiz);
+                foreach (var answer in question.Answers)
+                {
+                    answerService.Add(answer.Answer, answer.Correct ? 1 : 0, answer.Correct, questionId);
+                }
+            }
+
+
+           
+
+            
         }
 
         private static void ConfigureServices(IServiceCollection services)

@@ -18,9 +18,7 @@ namespace Quiz.Models
             public string IdentityUserId { get; set; }
             public IdentityUser IdentityUser { get; set; }
 
-            public int QuizId { get; set; }
-            public QuizEntity Quiz { get; set; }
-
+           
             public int QuestionId { get; set; }
             public Question Question { get; set; }
 

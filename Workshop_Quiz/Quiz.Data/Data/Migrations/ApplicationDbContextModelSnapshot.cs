@@ -277,9 +277,6 @@ namespace Quiz.Data.Migrations
                     b.Property<int>("QuestionId")
                         .HasColumnType("int");
 
-                    b.Property<int>("QuizId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AnswerId");
@@ -288,12 +285,10 @@ namespace Quiz.Data.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.HasIndex("QuizId");
-
                     b.ToTable("UserAnswers");
                 });
 
-            modelBuilder.Entity("Quiz.Models.QuizEntityl", b =>
+            modelBuilder.Entity("Quiz.Models.QuizEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -372,7 +367,7 @@ namespace Quiz.Data.Migrations
 
             modelBuilder.Entity("Quiz.Models.Question", b =>
                 {
-                    b.HasOne("Quiz.Models.QuizEntityl", "QuizModel")
+                    b.HasOne("Quiz.Models.QuizEntity", "QuizModel")
                         .WithMany("Questions")
                         .HasForeignKey("QuizId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -394,14 +389,8 @@ namespace Quiz.Data.Migrations
                         .HasForeignKey("IdentityUserId");
 
                     b.HasOne("Quiz.Models.Question", "Question")
-                        .WithMany("UserAnswers")
+                        .WithMany()
                         .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Quiz.Models.QuizEntityl", "Quiz")
-                        .WithMany("UserAnswers")
-                        .HasForeignKey("QuizId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -410,8 +399,6 @@ namespace Quiz.Data.Migrations
                     b.Navigation("IdentityUser");
 
                     b.Navigation("Question");
-
-                    b.Navigation("Quiz");
                 });
 
             modelBuilder.Entity("Quiz.Models.Answer", b =>
@@ -422,15 +409,11 @@ namespace Quiz.Data.Migrations
             modelBuilder.Entity("Quiz.Models.Question", b =>
                 {
                     b.Navigation("Answers");
-
-                    b.Navigation("UserAnswers");
                 });
 
-            modelBuilder.Entity("Quiz.Models.QuizEntityl", b =>
+            modelBuilder.Entity("Quiz.Models.QuizEntity", b =>
                 {
                     b.Navigation("Questions");
-
-                    b.Navigation("UserAnswers");
                 });
 #pragma warning restore 612, 618
         }
