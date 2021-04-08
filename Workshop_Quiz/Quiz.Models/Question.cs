@@ -1,5 +1,4 @@
-﻿using Quiz.Models.Quiz.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Quiz.Models
 {
@@ -8,7 +7,7 @@ namespace Quiz.Models
         public Question()
         {
             this.Answers = new HashSet<Answer>();
-           
+            this.UserAnswers = new HashSet<UserAnswer>();
         }
 
         public int Id { get; set; }
@@ -16,10 +15,10 @@ namespace Quiz.Models
         public string Title { get; set; }
 
         public int QuizId { get; set; }
-        public QuizEntity QuizModel { get; set; }
+        public Quiz Quiz { get; set; }
 
         public ICollection<Answer> Answers { get; set; }
 
-       
+        public ICollection<UserAnswer> UserAnswers { get; set; }
     }
 }

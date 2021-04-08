@@ -1,5 +1,4 @@
-﻿using Quiz.Models.Quiz.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Quiz.Models
 {

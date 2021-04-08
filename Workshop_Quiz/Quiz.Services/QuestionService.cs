@@ -1,16 +1,12 @@
 ﻿using Quiz.Data;
 using Quiz.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Quiz.Services
 {
-    public class QuestionService:IQuestionService
+    public class QuestionService : IQuestionService
     {
         private readonly ApplicationDbContext applicationDbContext;
+
         public QuestionService(ApplicationDbContext applicationDbContext)
         {
             this.applicationDbContext = applicationDbContext;
@@ -21,7 +17,7 @@ namespace Quiz.Services
             var question = new Question
             {
                 Title = title,
-                QuizId = quizId,
+                QuizId = quizId
             };
 
             this.applicationDbContext.Questions.Add(question);

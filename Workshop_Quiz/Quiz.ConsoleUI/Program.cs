@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Quiz.Data;
 using Quiz.Services;
-using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -19,29 +18,19 @@ namespace Quiz.ConsoleUI
             ConfigureServices(serviceCollection);
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
-            var json = File.ReadAllText("EF-Core-Quiz.json");
-         var questions=   JsonConvert.DeserializeObject<IEnumerable<JsonQuestion>>(json);
+            var jsonImporter = serviceProvider.GetService<IJsonImportService>();
+            jsonImporter.Import("EF-Core-Quiz.json", "EF Core Test v2");
 
-            var quizService = serviceProvider.GetService<IQuizService>();
-            var questionService = serviceProvider.GetService<IQuestionService>();
-            var answerService = serviceProvider.GetService<IAnswerService>();
+            //var answerService = serviceProvider.GetService<IAnswerService>();
+            //answerService.Add("2", 5, true, 2);
 
-            var quizId = quizService.Add("EF Core Test");
+            //var userAnswerService = serviceProvider.GetService<IUserAnswerService>();
+            //userAnswerService.AddUserAnswer("df871d8b-1e64-49cc-92db-f35ab8a75452", 1, 2, 1);
 
-            foreach (var question in questions)
-            {
-                var questionId = questionService.Add(question.Question,quizId);
+            //var quizService = serviceProvider.GetService<IUserAnswerService>();
+            //var quiz = quizService.GetUserResult("df871d8b-1e64-49cc-92db-f35ab8a75452", 1);
 
-                foreach (var answer in question.Answers)
-                {
-                    answerService.Add(answer.Answer, answer.Correct ? 1 : 0, answer.Correct, questionId);
-                }
-            }
-
-
-           
-
-            
+            //Console.WriteLine(quiz);
         }
 
         private static void ConfigureServices(IServiceCollection services)
@@ -57,10 +46,11 @@ namespace Quiz.ConsoleUI
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
               .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            services.AddTransient<IQuizService, QuizService>();
+            services.AddTransient<IQuizService, QuizSerivce>();
             services.AddTransient<IQuestionService, QuestionService>();
             services.AddTransient<IAnswerService, AnswerService>();
             services.AddTransient<IUserAnswerService, UserAnswerService>();
+            services.AddTransient<IJsonImportService, JsonImportService>();
         }
     }
 }
